@@ -7,6 +7,10 @@ import { Supplier } from '@/types';
 import { LogOut, Edit, Trash2, Plus, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+
+
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -15,22 +19,26 @@ export default function AdminDashboard() {
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
   const [loading, setLoading] = useState(true);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-
-  useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
-    if (!isLoggedIn) {
+const [user, setUser] = useState<any>(null);
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    if (currentUser) {
+      setUser(currentUser);
+      loadSuppliers();
+      
+      const justLoggedIn = sessionStorage.getItem('justLoggedIn');
+      if (justLoggedIn) {
+        setShowSuccessMessage(true);
+        sessionStorage.removeItem('justLoggedIn');
+        setTimeout(() => setShowSuccessMessage(false), 3000);
+      }
+    } else {
       router.push('/admin/login');
-      return;
     }
-    loadSuppliers();
-    
-    const justLoggedIn = sessionStorage.getItem('justLoggedIn');
-    if (justLoggedIn) {
-      setShowSuccessMessage(true);
-      sessionStorage.removeItem('justLoggedIn');
-      setTimeout(() => setShowSuccessMessage(false), 3000);
-    }
-  }, []);
+  });
+
+  return () => unsubscribe();
+}, [router]);
 
   const loadSuppliers = async () => {
     try {
@@ -42,11 +50,14 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
-
-  const handleLogout = () => {
-    localStorage.removeItem('isAdminLoggedIn');
+const handleLogout = async () => {
+  try {
+    await signOut(auth);
     router.push('/admin/login');
-  };
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+};
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this supplier?')) return;

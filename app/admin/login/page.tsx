@@ -1,28 +1,73 @@
 // app/admin/login/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, User, Lock } from 'lucide-react';
 import Image from 'next/image';
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Check if user is already logged in
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is already logged in, redirect to dashboard
+        router.push('/admin/dashboard');
+      } else {
+        setChecking(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
     
-    if (username === 'admin' && password === 'admin123') {
-      localStorage.setItem('isAdminLoggedIn', 'true');
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // No need to set localStorage, Firebase handles persistence
       router.push('/admin/dashboard');
-    } else {
-      setError('Invalid credentials');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      
+      // Handle specific Firebase auth errors
+      if (err.code === 'auth/invalid-email') {
+        setError('Invalid email address');
+      } else if (err.code === 'auth/user-not-found') {
+        setError('No account found with this email');
+      } else if (err.code === 'auth/wrong-password') {
+        setError('Incorrect password');
+      } else if (err.code === 'auth/invalid-credential') {
+        setError('Invalid email or password');
+      } else {
+        setError('Login failed. Please try again.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
+
+  // Show loading while checking auth state
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-teal-50 via-white to-amber-50 flex items-center justify-center">
+        <div className="text-teal-600 text-xl font-semibold">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50 via-white to-amber-50 flex items-center justify-center p-4">
@@ -54,14 +99,15 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleLogin}>
           <div className="mb-6">
-            <label className="block text-gray-900 font-semibold mb-3">Username</label>
+            <label className="block text-gray-900 font-semibold mb-3">Email</label>
             <div className="relative">
               <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter email"
+                required
                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-gray-900"
               />
             </div>
@@ -76,6 +122,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
+                required
                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-gray-900"
               />
             </div>
@@ -83,9 +130,10 @@ export default function AdminLoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-teal-600 text-white py-4 rounded-lg font-semibold hover:bg-teal-700 transition-colors shadow-lg text-lg"
+            disabled={loading}
+            className="w-full bg-teal-600 text-white py-4 rounded-lg font-semibold hover:bg-teal-700 transition-colors shadow-lg text-lg disabled:bg-teal-400 disabled:cursor-not-allowed"
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
       </div>
