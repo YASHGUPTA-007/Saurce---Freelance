@@ -3,42 +3,44 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supplierService } from '@/lib/services/supplierService';
+import { analyticsService } from '@/lib/services/analyticsService';
 import { Supplier } from '@/types';
-import { LogOut, Edit, Trash2, Plus, CheckCircle } from 'lucide-react';
+import { LogOut, Edit, Trash2, Plus, CheckCircle, Eye } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
-
-
 export default function AdminDashboard() {
   const router = useRouter();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [totalVisits, setTotalVisits] = useState<number>(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
   const [loading, setLoading] = useState(true);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-const [user, setUser] = useState<any>(null);
-useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-    if (currentUser) {
-      setUser(currentUser);
-      loadSuppliers();
-      
-      const justLoggedIn = sessionStorage.getItem('justLoggedIn');
-      if (justLoggedIn) {
-        setShowSuccessMessage(true);
-        sessionStorage.removeItem('justLoggedIn');
-        setTimeout(() => setShowSuccessMessage(false), 3000);
-      }
-    } else {
-      router.push('/admin/login');
-    }
-  });
+  const [user, setUser] = useState<any>(null);
 
-  return () => unsubscribe();
-}, [router]);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        loadSuppliers();
+        loadAnalytics();
+        
+        const justLoggedIn = sessionStorage.getItem('justLoggedIn');
+        if (justLoggedIn) {
+          setShowSuccessMessage(true);
+          sessionStorage.removeItem('justLoggedIn');
+          setTimeout(() => setShowSuccessMessage(false), 3000);
+        }
+      } else {
+        router.push('/admin/login');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const loadSuppliers = async () => {
     try {
@@ -50,14 +52,24 @@ useEffect(() => {
       setLoading(false);
     }
   };
-const handleLogout = async () => {
-  try {
-    await signOut(auth);
-    router.push('/admin/login');
-  } catch (error) {
-    console.error('Logout error:', error);
-  }
-};
+
+  const loadAnalytics = async () => {
+    try {
+      const visits = await analyticsService.getTotalVisits();
+      setTotalVisits(visits);
+    } catch (error) {
+      console.error('Error loading analytics:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/admin/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this supplier?')) return;
@@ -110,9 +122,38 @@ const handleLogout = async () => {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
+        {/* Analytics Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="bg-teal-100 p-3 rounded-lg">
+                <Eye className="text-teal-600" size={24} />
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Total Website Visits</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{totalVisits.toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <svg className="text-blue-600" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Total Suppliers</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{suppliers.length}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Manage Suppliers ({suppliers.length})
+            Manage Suppliers
           </h2>
           <button
             onClick={() => setShowAddModal(true)}

@@ -1,11 +1,28 @@
 // app/page.tsx
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
+import { analyticsService } from '@/lib/services/analyticsService';
 
 export default function HomePage() {
+  useEffect(() => {
+    // Track visit when page loads
+    const trackVisit = async () => {
+      // Check if visit was already tracked in this session
+      const visitTracked = sessionStorage.getItem('visitTracked');
+      
+      if (!visitTracked) {
+        await analyticsService.incrementVisits();
+        sessionStorage.setItem('visitTracked', 'true');
+      }
+    };
+
+    trackVisit();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50 via-white to-amber-50 relative overflow-hidden">
       {/* Yellow glow effect - adjusted for mobile */}
