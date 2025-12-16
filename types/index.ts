@@ -22,3 +22,15 @@ export interface Stats {
   suppliers: number;
   industries: number;
 }
+
+
+export interface Lead {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  supplierId: string;
+  supplierName: string;
+  verifiedAt: any; // Firestore Timestamp
+  status: 'verified' | 'pending';
+}
