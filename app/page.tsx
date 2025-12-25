@@ -36,19 +36,9 @@ export default function HomePage() {
       }
     };
 
-    const loadStats = async () => {
-      try {
-        const homeStats = await statsService.getHomeStats();
-        setStats(homeStats);
-      } catch (error) {
-        console.error('Error loading stats:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     trackVisit();
-    loadStats();
+
   }, []);
 
   return (
