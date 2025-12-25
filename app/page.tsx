@@ -89,61 +89,66 @@ export default function HomePage() {
               Explore <ArrowRight size={20} />
             </Link>
 
-            <div className="grid grid-cols-3 gap-4 sm:gap-8 md:gap-12 mt-16 sm:mt-20 md:mt-24 mb-12 sm:mb-14 md:mb-16 px-4">
-              <div>
-                <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-teal-600 mb-2 sm:mb-3">
-                  {loading ? <span className="animate-pulse">--</span> : `${stats.countries}+`}
-                </div>
-                <div className="text-gray-700 text-xs sm:text-sm md:text-base lg:text-lg font-medium">Countries</div>
-              </div>
-              <div>
-                <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-teal-600 mb-2 sm:mb-3">
-                  {loading ? <span className="animate-pulse">--</span> : `${stats.suppliers}+`}
-                </div>
-                <div className="text-gray-700 text-xs sm:text-sm md:text-base lg:text-lg font-medium">Verified Suppliers</div>
-              </div>
-              <div>
-                <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-teal-600 mb-2 sm:mb-3">
-                  {loading ? <span className="animate-pulse">--</span> : `${stats.industries}+`}
-                </div>
-                <div className="text-gray-700 text-xs sm:text-sm md:text-base lg:text-lg font-medium">Industries</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Why Choose Saurce Section */}
       <div className="bg-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose Saurce</h2>
-          <p className="text-gray-600 mb-12">Our platform offers unique advantages for both suppliers and buyers.</p>
-          
-          <div className="relative flex items-center justify-center max-w-7xl mx-auto">
-            <button className="hidden md:flex absolute -left-4 z-10 bg-gray-400 text-white p-2 rounded-full hover:bg-teal-600 transition-colors">
-              <ChevronLeft size={20}/>
-            </button>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-              {[
-                { title: "Verified Supplier", desc: "Only trusted manufacturers, ensuring quality sourcing." },
-                { title: "Seamless Communication", desc: "Chat, negotiate, and finalize deals—all in one place." },
-                { title: "Global Access", desc: "Connect with buyers and suppliers from anywhere in the world." },
-                { title: "Secure Transactions", desc: "Transparency at every step of the process." }
-              ].map((item, idx) => (
-                <div key={idx} className="bg-teal-50/30 p-8 rounded-xl border border-teal-100 min-h-[180px] flex flex-col justify-center shadow-sm">
-                  <h3 className="font-bold text-teal-900 mb-4 text-lg">{item.title}</h3>
-                  <p className="text-sm text-gray-700 leading-relaxed">{item.desc}</p>
-                </div>
-              ))}
-            </div>
+  <div className="container mx-auto px-4 text-center">
+    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+      Why Choose Saurce
+    </h2>
 
-            <button className="hidden md:flex absolute -right-4 z-10 bg-gray-400 text-white p-2 rounded-full hover:bg-teal-600 transition-colors">
-              <ChevronRight size={20}/>
-            </button>
+    <p className="text-gray-600 mb-12">
+      Building trust in African manufacturing, one verification at a time.
+    </p>
+
+    <div className="relative flex items-center justify-center max-w-7xl mx-auto">
+      <button className="hidden md:flex absolute -left-4 z-10 bg-gray-400 text-white p-2 rounded-full hover:bg-teal-600 transition-colors">
+        <ChevronLeft size={20} />
+      </button>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+        {[
+          {
+            title: "Personally Verified",
+            desc: "Every manufacturer is researched and contacted by our team. No automated listings, no unverified data."
+          },
+          {
+            title: "Africa-Focused Expertise",
+            desc: "Deep coverage across Sub-Saharan Africa's key manufacturing hubs — Nigeria, Ghana, Kenya, and beyond."
+          },
+          {
+            title: "Buyer-First Approach",
+            desc: "Built by someone who struggled to source from Africa. We understand what you actually need: real contacts, real capacity, real pricing."
+          },
+          {
+            title: "Transparent Information",
+            desc: "Production capacity, MOQs, lead times, and contact details. Verified and updated regularly."
+          }
+        ].map((item, idx) => (
+          <div
+            key={idx}
+            className="bg-teal-50/30 p-8 rounded-xl border border-teal-100 min-h-[180px] flex flex-col justify-center shadow-sm"
+          >
+            <h3 className="font-bold text-teal-900 mb-4 text-lg">
+              {item.title}
+            </h3>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {item.desc}
+            </p>
           </div>
-        </div>
+        ))}
       </div>
+
+      <button className="hidden md:flex absolute -right-4 z-10 bg-gray-400 text-white p-2 rounded-full hover:bg-teal-600 transition-colors">
+        <ChevronRight size={20} />
+      </button>
+    </div>
+  </div>
+</div>
+
 
       {/* How It Works Section */}
       <div className="bg-slate-50 py-24 border-y border-gray-100">
