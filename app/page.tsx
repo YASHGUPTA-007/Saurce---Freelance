@@ -122,12 +122,12 @@ export default function HomePage() {
                 ].map((item, idx) => (
                   <div
                     key={idx}
-                    className="bg-white p-8 rounded-xl min-h-[180px] flex flex-col justify-center shadow-sm"
+                    className="bg-white p-8 rounded-xl min-h-[180px] flex flex-col justify-center shadow-sm text-left"
                   >
-                    <h3 className="font-bold text-black mb-4 text-lg">
+                    <h3 className="font-bold text-black mb-4 text-xl">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-gray-700 leading-relaxed">
+                    <p className="text-sm text-gray-600 leading-relaxed">
                       {item.desc}
                     </p>
                   </div>
