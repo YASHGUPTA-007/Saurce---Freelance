@@ -122,8 +122,7 @@ export default function HomePage() {
                 ].map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-8 rounded-xl border border-teal-100 min-h-[180px] flex flex-col justify-center shadow-sm"
-                    style={{ backgroundColor: '#E8F5F3' }}
+                    className="bg-teal-50/30 p-8 rounded-xl border border-teal-100 min-h-[180px] flex flex-col justify-center shadow-sm"
                   >
                     <h3 className="font-bold text-black mb-4 text-lg">
                       {item.title}
