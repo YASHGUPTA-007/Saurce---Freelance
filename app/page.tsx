@@ -193,7 +193,7 @@ export default function HomePage() {
             <p className="mb-4 text-base sm:text-lg text-gray-700 font-medium">Questions? Reach out to us</p>
             <a 
               href="mailto:Info@saurce.com" 
-              className="text-teal-600 font-bold text-xl sm:text-xl hover:text-teal-700 transition-colors break-all underline underline-offset-8 decoration-teal-100"
+              className="text-teal-600 font-bold text-2xl sm:text-3xl hover:text-teal-700 transition-colors break-all underline underline-offset-8 decoration-teal-100"
             >
               Info@saurce.com
             </a>
